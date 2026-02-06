@@ -15,38 +15,22 @@ DEP_CACHE_FILE=~/.qltool_dep_cache # 依赖缓存文件路径
 SCRIPT_NAME="凄凉Tool.py"          # 主脚本名
 #!/bin/bash
 # 获取当前sh脚本的绝对路径
+#!/bin/bash
+# 获取当前sh脚本绝对路径（匹配Python Path(__file__).resolve()）
 SCRIPT_PATH=$(readlink -f "$0")
-# 当前脚本所在目录（对应Python的current_dir = Path(__file__).parent）
+# 当前脚本所在目录（仅检查/删除此目录下的qltool）
 CURRENT_DIR=$(dirname "$SCRIPT_PATH")
-# 上一级目录（对应Python的parent_dir = current_dir.parent）
-PARENT_DIR=$(dirname "$CURRENT_DIR")
-# 目标检查目录/文件
 TARGET="qltool"
+TARGET_PATH="${CURRENT_DIR}/${TARGET}"
 
-# 检查并删除 - 函数封装
-check_and_delete() {
-    local CHECK_DIR=$1
-    local TARGET_PATH="${CHECK_DIR}/${TARGET}"
-    if [ -e "$TARGET_PATH" ]; then
-        # 存在则删除（文件/目录都支持，-rf强制删除非空目录）
-        rm -rf "$TARGET_PATH"
-        echo "✅ 已删除 ${CHECK_DIR} 下的 ${TARGET}"
-    else
-        echo "❌ ${CHECK_DIR} 下无 ${TARGET}，无需删除"
-    fi
-}
+# 检查并删除
+if [ -e "$TARGET_PATH" ]; then
+    rm -rf "$TARGET_PATH"
+    echo "✅ 已删除当前脚本目录[${CURRENT_DIR}]下的${TARGET}"
+else
+    echo "❌ 当前脚本目录[${CURRENT_DIR}]下无${TARGET}，无需删除"
+fi
 
-# 打印信息
-echo "========================================"
-echo "当前脚本路径：$SCRIPT_PATH"
-echo "当前脚本目录：$CURRENT_DIR"
-echo "上一级目录：$PARENT_DIR"
-echo "========================================"
-# 执行检查删除（当前目录+上一级目录）
-check_and_delete "$CURRENT_DIR"
-check_and_delete "$PARENT_DIR"
-echo "========================================"
-echo "检查&删除操作完成"
 echo -e "${BLUE}更新 Termux 包...${NC}"
 pkg update -y && pkg upgrade -y
 
@@ -125,4 +109,5 @@ else
         exit 1
     fi
 fi
+
 
