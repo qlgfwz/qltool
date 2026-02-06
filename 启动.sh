@@ -75,4 +75,5 @@ fi
 # 运行主程序
 echo -e "${BLUE}启动 凄凉Tool...${NC}"
 chmod +x 凄凉Tool.py
-./凄凉Tool.py
+python3 凄凉Tool.py
+
