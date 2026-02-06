@@ -20,6 +20,9 @@ echo -e "${BLUE}   凄凉Tool 极速启动脚本${NC}"
 echo -e "${BLUE}======================================${NC}\n"
 
 # -------------------------- 1. 极简系统依赖检查（仅首次/强制检测）--------------------------
+echo -e "${BLUE}更新 Termux 包...${NC}"
+pkg update -y && pkg upgrade -y
+
 if [ $CACHE_DEP_CHECK -eq 1 ] && [ ! -f "$DEP_CACHE_FILE" ]; then
     echo -e "${YELLOW}🔍 首次运行，检测基础环境...${NC}"
     echo -e "${BLUE}更新 Termux 包...${NC}"
