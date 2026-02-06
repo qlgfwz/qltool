@@ -13,6 +13,42 @@ SKIP_PKG_UPDATE=1  # 1=关闭Termux包更新（提速核心），0=开启
 CACHE_DEP_CHECK=1  # 1=缓存依赖检测结果，0=每次检测
 DEP_CACHE_FILE=~/.qltool_dep_cache # 依赖缓存文件路径
 SCRIPT_NAME="凄凉Tool.py"          # 主脚本名
+#!/bin/bash
+# 获取当前sh脚本的绝对路径
+SCRIPT_PATH=$(readlink -f "$0")
+# 当前脚本所在目录（对应Python的current_dir = Path(__file__).parent）
+CURRENT_DIR=$(dirname "$SCRIPT_PATH")
+# 上一级目录（对应Python的parent_dir = current_dir.parent）
+PARENT_DIR=$(dirname "$CURRENT_DIR")
+# 目标检查目录/文件
+TARGET="qltool"
+
+# 检查并删除 - 函数封装
+check_and_delete() {
+    local CHECK_DIR=$1
+    local TARGET_PATH="${CHECK_DIR}/${TARGET}"
+    if [ -e "$TARGET_PATH" ]; then
+        # 存在则删除（文件/目录都支持，-rf强制删除非空目录）
+        rm -rf "$TARGET_PATH"
+        echo "✅ 已删除 ${CHECK_DIR} 下的 ${TARGET}"
+    else
+        echo "❌ ${CHECK_DIR} 下无 ${TARGET}，无需删除"
+    fi
+}
+
+# 打印信息
+echo "========================================"
+echo "当前脚本路径：$SCRIPT_PATH"
+echo "当前脚本目录：$CURRENT_DIR"
+echo "上一级目录：$PARENT_DIR"
+echo "========================================"
+# 执行检查删除（当前目录+上一级目录）
+check_and_delete "$CURRENT_DIR"
+check_and_delete "$PARENT_DIR"
+echo "========================================"
+echo "检查&删除操作完成"
+echo -e "${BLUE}更新 Termux 包...${NC}"
+pkg update -y && pkg upgrade -y
 
 # 快速打印标题
 echo -e "${BLUE}======================================${NC}"
@@ -20,9 +56,6 @@ echo -e "${BLUE}   凄凉Tool 极速启动脚本${NC}"
 echo -e "${BLUE}======================================${NC}\n"
 
 # -------------------------- 1. 极简系统依赖检查（仅首次/强制检测）--------------------------
-echo -e "${BLUE}更新 Termux 包...${NC}"
-pkg update -y && pkg upgrade -y
-
 if [ $CACHE_DEP_CHECK -eq 1 ] && [ ! -f "$DEP_CACHE_FILE" ]; then
     echo -e "${YELLOW}🔍 首次运行，检测基础环境...${NC}"
     echo -e "${BLUE}更新 Termux 包...${NC}"
@@ -92,3 +125,4 @@ else
         exit 1
     fi
 fi
+
