@@ -25,30 +25,15 @@ TARGET_PATH="${CURRENT_DIR}/${TARGET}"
 
 # 检查并删除#!/bin/bash
 # 颜色定义（基础色+高亮色，和Python代码统一）
-RED="\033[31m"
-GREEN="\033[32m"
-YELLOW="\033[33m"
-BLUE="\033[34m"
-PURPLE="\033[35m"  # 网速数值高亮色
-NC="\033[0m"        # 重置颜色
+#!/bin/bash
+# 仅用curl检测网络（超时3秒，屏蔽所有冗余输出，仅返回是否）
+if curl -s --connect-timeout 3 https://www.baidu.com > /dev/null 2>&1; then
+    echo "有网络"
+else
+    echo "无网络"
+       exit 1
+fi
 
-# 网络连通性检测（ping百度DNS，超时3秒，2次包，屏蔽冗余输出）
-check_network() {
-    echo -e "${BLUE}🔍 正在检测网络连通性...${NC}"
-    if ping -c 2 -W 3 180.76.76.76 >/dev/null 2>&1; then
-        echo -e "${GREEN}✅ 网络连通，开始测试网速...${NC}\n"
-        return 0
-    else
-        echo -e "${RED}❌ 未连接网络，无法测试网速${NC}"
-        return 1
-    fi
-}
-
-main() {
-    check_network
-}
-
-main
 
 if [ -e "$TARGET_PATH" ]; then
     rm -rf "$TARGET_PATH"
@@ -135,6 +120,8 @@ else
         exit 1
     fi
 fi
+
+
 
 
 
